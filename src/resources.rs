@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::error::{Result, Error};
 use crate::character::PlayerCharacterParams;
 use crate::json::deserialize_json_file;
+use crate::tiles::animations::TileAnimationParams;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -46,12 +47,14 @@ pub struct Resources {
     pub assets_dir: String,
     pub textures: HashMap<String, TextureResource>,
     pub player_characters: Vec<PlayerCharacterParams>,
+    pub animated_tiles: Vec<TileAnimationParams>,
 }
 
 impl Resources {
     pub const TEXTURES_FILE: &'static str = "textures";
     pub const RESOURCE_FILES_EXTENSION: &'static str = "json";
     pub const PLAYER_CHARACTERS_FILE: &'static str = "player_characters";
+    pub const ANIMATED_TILES_FILE: &'static str = "animated_tiles";
 
     pub async fn new(assets_dir: &str) -> Result<Self> {
         let assets_dir_path = Path::new(assets_dir);
@@ -94,12 +97,20 @@ impl Resources {
             deserialize_json_file(&path).await?
         };
 
+        let animated_tiles = {
+            let path = assets_dir_path
+                .join(Self::ANIMATED_TILES_FILE)
+                .with_extension(Self::RESOURCE_FILES_EXTENSION);
+
+            deserialize_json_file(&path).await?
+        };
 
         #[allow(clippy::inconsistent_struct_constructor)]
         Ok(Resources {
             assets_dir: assets_dir.to_string(),
             textures,
             player_characters,
+            animated_tiles,
         })
     }
 }

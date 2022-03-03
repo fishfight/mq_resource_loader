@@ -5,6 +5,7 @@ pub mod helpers;
 pub mod character;
 pub mod resources;
 pub mod animated_sprite;
+pub mod tiles;
 
 
 #[cfg(test)]
